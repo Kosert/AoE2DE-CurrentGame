@@ -12,30 +12,22 @@ class Listener {
 
 export class MatchesApi {
 
-    // private ws: WebSocket
-
     // matchId to MatchData
     private ongoingMatches: MatchData[] = []
     private listeners: Listener[] = []
 
     constructor() {
         const self = this
+        const ws = new WebSocket("wss://socket.aoe2companion.com/listen?handler=ongoing-matches")
+        ws.on('error', console.error) //todo reconnect
 
-        setTimeout(() => {
+        ws.on('open', function open() {
+            console.log("MatchesApi: Websocket to aoe2companion connected")
+        })
 
-            const ws = new WebSocket("wss://socket.aoe2companion.com/listen?handler=ongoing-matches")
-            ws.on('error', console.error) //todo reconnect
-    
-            ws.on('open', function open() {
-                console.log("MatchesApi: Websocket to aoe2companion connected")
-            })
-    
-            ws.on('message', function message(data: string) {
-                self.parseMessage(data)
-            })
-        }, 6000)
-
-
+        ws.on('message', function message(data: string) {
+            self.parseMessage(data)
+        })
     }
 
     private parseMessage(data: string) {
