@@ -12,7 +12,7 @@ class Listener {
 
 export class MatchesApi {
 
-    private ws: WebSocket
+    // private ws: WebSocket
 
     // matchId to MatchData
     private ongoingMatches: MatchData[] = []
@@ -21,22 +21,25 @@ export class MatchesApi {
     constructor() {
         const self = this
 
-        this.ws = new WebSocket("wss://socket.aoe2companion.com/listen?handler=ongoing-matches")
-        this.ws.on('error', console.error) //todo reconnect
+        setTimeout(() => {
 
-        this.ws.on('open', function open() {
-            console.log("MatchesApi: Websocket to aoe2companion connected")
-        })
+            const ws = new WebSocket("wss://socket.aoe2companion.com/listen?handler=ongoing-matches")
+            ws.on('error', console.error) //todo reconnect
+    
+            ws.on('open', function open() {
+                console.log("MatchesApi: Websocket to aoe2companion connected")
+            })
+    
+            ws.on('message', function message(data: string) {
+                self.parseMessage(data)
+            })
+        }, 6000)
 
-        this.ws.on('message', function message(data: string) {
-            self.parseMessage(data)
-        })
+
     }
 
     private parseMessage(data: string) {
         const received = JSON.parse(data) as MatchEvent[]
-        console.log('MatchesApi: received: %s events', received.length)
-
         const idsToRemove = received.filter(event => event.type == EventType.MATCH_REMOVED)
             .map(event => event.data.matchId)
 
@@ -58,9 +61,15 @@ export class MatchesApi {
         this.listeners.filter(it => idsToRemove.includes(it.currentMatchId))
             .forEach(it => listenersToUpdate.push(it))
 
-        const playerIdsToUpdate = addEvents.flatMap(it => it.data.players).map(it => it.profileId)
-        this.listeners.filter(it => playerIdsToUpdate.includes(it.playerId))
-            .forEach(it => listenersToUpdate.push(it))
+        const playerIdsToUpdate = addEvents.flatMap(it => it.data.players)
+            .map(it => it.profileId)
+            .filter(it => it != -1)
+
+        this.listeners.forEach(it => {
+            if (playerIdsToUpdate.find(id => id == it.playerId)) {
+                listenersToUpdate.push(it)
+            }
+        })
 
         listenersToUpdate.forEach(it => {
             this.updateListener(it)
@@ -68,9 +77,10 @@ export class MatchesApi {
     }
 
     private updateListener(listener: Listener) {
-        const current = this.getForPlayerId(listener.playerId)
-        listener.currentMatchId = current?.matchId ?? -1
-        listener.callback(current)
+        const match = this.getForPlayerId(listener.playerId)
+        console.log("Updating: ", listener.socketId, listener.playerId, match?.matchId)
+        listener.currentMatchId = match?.matchId ?? -1
+        listener.callback(match)
     }
 
     getForPlayerId(playerId: number): MatchData | undefined {
