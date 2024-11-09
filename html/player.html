@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current game info</title>
+    <link href="/public/main.css" rel="stylesheet">
+    <style>
+        .badge-p1 {
+            background-color: blue;
+            color: white;
+        }
+
+        .badge-p2 {
+            background-color: red;
+            color: white;
+        }
+
+        .badge-p3 {
+            background-color: green;
+            color: white;
+        }
+
+        .badge-p4 {
+            background-color: yellow;
+            color: black;
+        }
+
+        .badge-p5 {
+            background-color: cyan;
+            color: black;
+        }
+
+        .badge-p6 {
+            background-color: purple;
+            color: white;
+        }
+
+        .badge-p7 {
+            background-color: gray;
+            color: white;
+        }
+
+        .badge-p8 {
+            background-color: orange;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container md:ps-20 xl:ps-48 mb-6">
+
+        <h1 id="header" class="text-2xl ps-6 pt-10 pb-4">Current game:</h1>
+
+        <div id="main-container" class="flex w-full flex-col sm:flex-row">
+
+        </div>
+        </div>
+
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
+    <script>var exports = {};</script>
+    <script id="player-template" type="text/x-handlebars-template">
+        <li>
+            <div>
+                <div class="badge badge-p{{color}} badge-lg">{{color}}</div>
+                <div class>
+                    <div id="p{{color}}-name" class="col-start-1">{{name}}</div>
+                    <div id="p{{color}}-civ" class="stat-desc">{{civName}}</div>
+                </div>
+            </div>
+        </li>
+    </script>
+
+    <script id="team-template" type="text/x-handlebars-template">
+        <div {{#hideDivider}}style="display: none"{{/hideDivider}} class="divider sm:divider-horizontal">VS</div>
+            <ul class="card menu bg-base-300 rounded-box grid flex-grow place-items-stretch">
+                <h2 class="menu-title">{{teamName}}</h2>
+                <div class="players-container">
+
+                </div>
+                <div class="menu-title">Team Bonus:</div>
+                <div class="px-4 pb-3">{{{bonuses}}}</div>
+            </ul>
+    </script>
+    
+    <script src="player/socket.io/socket.io.js"></script>
+    <script src="public/game.js"></script>
+
+</body>
+
+</html>
