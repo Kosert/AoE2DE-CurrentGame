@@ -47,18 +47,18 @@ window.onload = async function () {
                             dropdownUl.appendChild(row)
                         })
                     } else {
-                        const row = createTextRow("No results. Enter at least 3 characters.")
+                        const row = createTextRow("No results, enter at least 3 letters")
                         dropdownUl.appendChild(row)
                     }
                 }).catch(err => {
                     dropdownUl.innerHTML = ""
                     console.error(err)
-                    const row = createTextRow("Error occurred, check console for details.")
+                    const row = createTextRow("Error occurred, check console")
                     dropdownUl.appendChild(row)
                 })
             }, 500)
         } else {
-            const row = createTextRow("No results. Enter at least 3 characters.")
+            const row = createTextRow("No results, enter at least 3 letters")
             dropdownUl.appendChild(row)
         }
     })
