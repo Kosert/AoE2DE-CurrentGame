@@ -10,11 +10,11 @@ npx tailwindcss -o dist/public/main.css
 ```
 
 ### Compiling and running
-Following command will compile typescript and run the app:
+First install depndencies:
+```
+npm install
+```
+Then compile typescript and run the app with:
 ```
 npm start
-```
-Or just launch if the app is already built:
-```
-node dist/index.js
 ```
