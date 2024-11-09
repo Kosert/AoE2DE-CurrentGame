@@ -108,7 +108,7 @@ app.use(function (err: any, req: Request, res: Response, next: any) {
     res.status(500).send({ error: "INTERNAL_SERVER_ERROR" })
 })
 
-server.listen(3000, function () {
+server.listen(2139, function () {
     console.log(`Server started on ${server.address().port}`);
 });
 
