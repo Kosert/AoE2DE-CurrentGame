@@ -65,7 +65,7 @@ window.onload = async function () {
 }
 
 async function search(query: string): Promise<Profile[]> {
-    return fetch("/api/search?query=" + query).then(response => {
+    return fetch("api/search?query=" + query).then(response => {
         if (!response.ok) {
             throw new Error(response.statusText)
         }
