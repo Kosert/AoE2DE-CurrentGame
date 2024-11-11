@@ -19,15 +19,26 @@ export class MatchesApi {
     constructor() {
         const self = this
         const ws = new WebSocket("wss://socket.aoe2companion.com/listen?handler=ongoing-matches")
-        ws.on('error', console.error) //todo reconnect
+        ws.on('error', function error(err: Error) {
+            console.error(self.getDate() + "MatchesApi: Websocket error - ", err)
+        })
+
+        ws.on("close", function close(code: number, reason: Buffer) {
+            console.error(self.getDate() + "MatchesApi: Websocket closed - ", code, reason)
+            //todo reconnect
+        })
 
         ws.on('open', function open() {
-            console.log("MatchesApi: Websocket to aoe2companion connected")
+            console.log(self.getDate() + "MatchesApi: Websocket to aoe2companion connected")
         })
 
         ws.on('message', function message(data: string) {
             self.parseMessage(data)
         })
+    }
+
+    private getDate(): string {
+        return new Date().toISOString() + " - "
     }
 
     private parseMessage(data: string) {
@@ -36,14 +47,14 @@ export class MatchesApi {
             .map(event => event.data.matchId)
 
         if (idsToRemove.length > 0) {
-            console.log("MatchesApi: Removing %d matches", idsToRemove.length)
+            console.log(this.getDate() + "MatchesApi: Removing %d matches", idsToRemove.length)
         }
 
         this.ongoingMatches = this.ongoingMatches.filter(it => !idsToRemove.includes(it.matchId))
             
         const addEvents = received.filter(event => event.type == EventType.MATCH_ADDED)
         if (addEvents.length > 0) {
-            console.log("MatchesApi: Adding %d matches", addEvents.length)
+            console.log(this.getDate() +"MatchesApi: Adding %d matches", addEvents.length)
         }
         addEvents.forEach(it => {
             this.ongoingMatches.push(it.data)
@@ -70,7 +81,7 @@ export class MatchesApi {
 
     private updateListener(listener: Listener) {
         const match = this.getForPlayerId(listener.playerId)
-        console.log("Updating: ", listener.socketId, listener.playerId, match?.matchId)
+        console.log(this.getDate() + "Updating: ", listener.socketId, listener.playerId, match?.matchId)
         listener.currentMatchId = match?.matchId ?? -1
         listener.callback(match)
     }
@@ -83,7 +94,7 @@ export class MatchesApi {
 
     registerForChanges(socketId: string, playerId: number, callback: (match: MatchData | undefined) => void) {
         this.unregisterListener(socketId)
-        console.log("MatchesApi: Registering", socketId, "for", playerId)
+        console.log(this.getDate() +"MatchesApi: Registering", socketId, "for", playerId)
         const newListener = new Listener(socketId, playerId, -1, callback)
         this.updateListener(newListener)
         this.listeners.push(newListener)
@@ -93,7 +104,7 @@ export class MatchesApi {
         const existingIndex = this.listeners.findIndex(it => it.socketId == socketId)
         if (existingIndex != -1) {
             const removed = this.listeners.splice(existingIndex, 1)[0]
-            console.log("MatchesApi: Unregistered", socketId, "for", removed.playerId)
+            console.log(this.getDate() +"MatchesApi: Unregistered", socketId, "for", removed.playerId)
         }
     }
 }
