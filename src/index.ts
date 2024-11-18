@@ -47,10 +47,19 @@ app.get("/player", function (req: Request, res) {
 
 // ===== API ENDPOINTS =====
 app.get("/api/search", function (req: Request, res) {
-    const query = parseStringParam(req.query, "query")
-    searchApi.search(query ?? "")
+    const query = parseStringParam(req.query, "query") ?? ""
+    searchApi.search(query)
         .then(profiles => {
-            res.send(profiles.map(it => modelConverter.convertProfile(it)))
+
+            res.send(
+                profiles.sort((a, b) => {
+                    const result = Number(b.name.startsWith(query)) - Number(a.name.startsWith(query))
+                    if (result != 0)
+                        return result
+                    else
+                        return a.name.localeCompare(b.name)
+                }).map(it => modelConverter.convertProfile(it))
+            )
         }).catch(err => {
             if (err == "Invalid query") {
                 res.status(400).send({ error: "Invalid parameter: query" })
@@ -63,22 +72,22 @@ app.get("/api/search", function (req: Request, res) {
 })
 
 
-app.get("/api/currentMatch", function (req: Request, res) {
-    const playerId = parseIntParam(req.query, "playerId")
-    if (!playerId) {
-        res.status(400).send({ error: "Invalid parameter: playerId" })
-        return
-    }
+// app.get("/api/currentMatch", function (req: Request, res) {
+//     const playerId = parseIntParam(req.query, "playerId")
+//     if (!playerId) {
+//         res.status(400).send({ error: "Invalid parameter: playerId" })
+//         return
+//     }
 
-    const matchData = matchesApi.getForPlayerId(playerId)
-    if (!matchData) {
-        res.status(404).send({ error: "No ongoing match found for provided id" })
-        return
-    }
+//     const matchData = matchesApi.getForPlayerId(playerId)
+//     if (!matchData) {
+//         res.status(404).send({ error: "No ongoing match found for provided id" })
+//         return
+//     }
 
-    const match = modelConverter.convertMatch(matchData)
-    res.send(match)
-})
+//     const match = modelConverter.convertMatch(matchData)
+//     res.send(match)
+// })
 
 // ===== WEBSOCKET ENDPOINT ======
 const io = new Server(server, { path: "/player/socket.io" /* options */ });
