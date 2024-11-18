@@ -50,16 +50,7 @@ app.get("/api/search", function (req: Request, res) {
     const query = parseStringParam(req.query, "query") ?? ""
     searchApi.search(query)
         .then(profiles => {
-
-            res.send(
-                profiles.sort((a, b) => {
-                    const result = Number(b.name.startsWith(query)) - Number(a.name.startsWith(query))
-                    if (result != 0)
-                        return result
-                    else
-                        return a.name.localeCompare(b.name)
-                }).map(it => modelConverter.convertProfile(it))
-            )
+            res.send(profiles.map(it => modelConverter.convertProfile(it)))
         }).catch(err => {
             if (err == "Invalid query") {
                 res.status(400).send({ error: "Invalid parameter: query" })

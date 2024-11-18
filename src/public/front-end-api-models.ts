@@ -43,7 +43,7 @@ export class Profile {
     constructor(
         readonly profileId: number,
         readonly steamId: string,
-        readonly name: string,
+        public name: string,
         readonly country: string,
     ) {}
 }

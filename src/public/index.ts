@@ -2,8 +2,14 @@ import { Profile } from "./front-end-api-models";
 
 let profileTemplate: HandlebarsTemplateDelegate<Profile>
 
-function createProfileHtml(profile: Profile): HTMLElement {
-    const htmlString = profileTemplate(profile)
+function createProfileHtml(profile: Profile, query: string): HTMLElement {
+    const queryIndexStart = profile.name.toLowerCase().indexOf(query.toLowerCase())
+    if (queryIndexStart != -1) {
+        const queryIndexEnd = queryIndexStart + query.length
+        const name = profile.name
+        profile.name = [name.slice(0, queryIndexStart), "<b>", name.slice(queryIndexStart, queryIndexEnd), "</b>", name.slice(queryIndexEnd)].join('');
+    }
+    const htmlString = profileTemplate(profile)    
     const div = document.createElement('div')
     div.innerHTML = htmlString.trim()
     return div.firstChild as HTMLElement
@@ -15,7 +21,7 @@ function createTextRow(text: string): HTMLElement {
         steamId: "",
         name: text,
         country: "",
-    })
+    }, "")
 }
 
 window.onload = async function () {
@@ -40,7 +46,7 @@ window.onload = async function () {
                     dropdownUl.innerHTML = ""
                     if (profiles) {
                         profiles.slice(0, 10).forEach(it => {
-                            const row = createProfileHtml(it)
+                            const row = createProfileHtml(it, query)
                             row.addEventListener("click", function() {
                                 window.location.href = "player?playerId=" + it.profileId
                             })
