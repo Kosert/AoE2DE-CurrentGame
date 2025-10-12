@@ -15,9 +15,6 @@ export interface UserProfile {
 export class SearchApi {
 
     async searchProfiles(encodedQuery: string): Promise<SearchResponse> {
-        const headers = new Headers()
-        headers.append("Content-Type", "application/json")
-
         return fetch(`https://data.aoe2companion.com/api/profiles?search=${encodedQuery}&page=1`, {
             "headers": {
                 "Origin": "https://www.aoe2companion.com",
