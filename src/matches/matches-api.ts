@@ -49,14 +49,14 @@ export class MatchesApi {
             .map(event => event.data.matchId)
 
         if (idsToRemove.length > 0) {
-            this.log("MatchesApi: Removing %d matches", idsToRemove.length)
+            this.log("MatchesApi: Removing", idsToRemove.length, "matches", )
         }
 
         this.ongoingMatches = this.ongoingMatches.filter(it => !idsToRemove.includes(it.matchId))
             
         const addEvents = received.filter(event => event.type == EventType.MATCH_ADDED)
         if (addEvents.length > 0) {
-            this.log("MatchesApi: Adding %d matches", addEvents.length)
+            this.log("MatchesApi: Adding", addEvents.length, "matches")
         }
         addEvents.forEach(it => {
             this.ongoingMatches.push(it.data)
