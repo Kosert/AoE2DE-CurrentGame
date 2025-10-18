@@ -1,4 +1,6 @@
+//source: https://github.com/SiegeEngineers/aoe2techtree/blob/master/data/data.json
 import dataJson from "./data/data.json"
+//source: https://github.com/SiegeEngineers/aoe2techtree/blob/master/data/locales/en/strings.json
 import stringsJson from "./data/strings.json"
 
 export class DataManager {
